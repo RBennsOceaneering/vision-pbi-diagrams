@@ -117,13 +117,9 @@
 
         async function signIn() {
             try {
-                const response = await msalInstance.loginPopup({
+                await msalInstance.loginRedirect({
                     scopes: [DEVOPS_SCOPE]
                 });
-                accessToken = response.accessToken;
-                document.getElementById('login-container').style.display = 'none';
-                await loadAndRender();
-                setInterval(loadAndRender, CONFIG.refreshIntervalMs);
             } catch (e) {
                 document.getElementById('error').textContent = 'Sign-in failed: ' + e.message;
             }
