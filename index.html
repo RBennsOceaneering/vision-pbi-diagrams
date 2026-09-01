@@ -3,21 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PBI Dependency Diagram</title>
+    <title>Team Catalyst — PBI Diagrams</title>
     <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: stretch;
-            padding: 2rem;
-            max-width: 100%;
             background: #1e1e1e;
             color: #ccc;
+            min-height: 100vh;
         }
-        h1 { font-size: 1.4rem; margin-bottom: 0.5rem; text-align: center; }
+
+        /* --- Header bar --- */
+        .header {
+            background: #252526;
+            border-bottom: 1px solid #333;
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .header h1 { font-size: 1.3rem; font-weight: 600; color: #e0e0e0; }
+        .header .subtitle { font-size: 0.85rem; color: #888; }
+        .back-btn {
+            background: #333;
+            color: #ccc;
+            border: 1px solid #555;
+            padding: 6px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+        .back-btn:hover { background: #444; color: #fff; }
+
+        .main { padding: 2rem; }
+
+        /* --- Login --- */
+        .login-container { text-align: center; margin-top: 4rem; }
+        .login-container button {
+            background: #0078d4; color: white; border: none; padding: 14px 40px;
+            font-size: 16px; border-radius: 6px; cursor: pointer;
+        }
+        .login-container button:hover { background: #106ebe; }
+        .login-container p { margin-bottom: 1.5rem; font-size: 1.1rem; }
+
+        /* --- Landing page --- */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        .feature-card {
+            background: #2d2d2d;
+            border: 1px solid #3e3e3e;
+            border-radius: 10px;
+            padding: 1.25rem;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+        .feature-card:hover {
+            border-color: #0078d4;
+            background: #333;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,120,212,0.2);
+        }
+        .feature-card .card-id {
+            font-size: 0.75rem;
+            color: #888;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .feature-card .card-title {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: #e0e0e0;
+            line-height: 1.3;
+        }
+        .feature-card .card-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.8rem;
+            color: #999;
+        }
+        .card-state {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        .card-pbi-count {
+            background: #3e3e3e;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+        }
+
+        /* --- Diagram page --- */
         .status { font-size: 0.9rem; color: #888; text-align: center; margin-bottom: 1rem; }
-        .mermaid { background: #2d2d2d; padding: 2rem; border-radius: 8px; width: 100%; box-sizing: border-box; }
+        .mermaid { background: #2d2d2d; padding: 2rem; border-radius: 8px; width: 100%; }
         .mermaid svg { width: 100% !important; height: auto !important; max-width: 100%; }
         .mermaid .node rect, .mermaid .node polygon { rx: 8px; ry: 8px; }
         .mermaid .nodeLabel { font-size: 32px !important; padding: 20px 30px !important; }
@@ -25,90 +123,102 @@
         .mermaid .flowchart-link { stroke-width: 4px !important; }
         .mermaid marker { transform: scale(1.5); }
         .updated { font-size: 0.8rem; color: #888; margin-top: 1rem; text-align: center; }
-        .login-container { text-align: center; margin-top: 4rem; }
-        .login-container button {
-            background: #0078d4; color: white; border: none; padding: 12px 32px;
-            font-size: 16px; border-radius: 4px; cursor: pointer;
-        }
-        .login-container button:hover { background: #106ebe; }
         .error { color: #eb3345; text-align: center; margin: 1rem; }
         .legend { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin: 1rem 0; }
         .legend-item { display: flex; align-items: center; gap: 6px; font-size: 14px; }
         .legend-swatch { width: 16px; height: 16px; border-radius: 3px; border: 1px solid #555; }
+        .diagram-title { font-size: 1.4rem; text-align: center; margin-bottom: 0.5rem; color: #e0e0e0; }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
     <script src="https://alcdn.msauth.net/browser/2.38.0/js/msal-browser.min.js"></script>
 </head>
 <body>
-    <h1 id="title">PBI Dependency Diagram</h1>
-    <div class="status" id="status">Loading...</div>
-    <div class="legend" id="legend"></div>
-    <div id="diagram-container"></div>
-    <p class="updated" id="updated"></p>
-    <div class="login-container" id="login-container" style="display:none;">
-        <p>Sign in with your Azure AD account to view the diagram.</p>
-        <button onclick="signIn()">Sign In</button>
+    <div class="header" id="header">
+        <div>
+            <h1>Team Catalyst — PBI Dependency Diagrams</h1>
+            <div class="subtitle">Live dependency graphs for Team Catalyst features</div>
+        </div>
     </div>
-    <div class="error" id="error"></div>
+
+    <div class="main">
+        <div class="login-container" id="login-container" style="display:none;">
+            <p>Sign in with your Azure AD account to view diagrams.</p>
+            <button onclick="signIn()">Sign In</button>
+        </div>
+        <div class="status" id="status">Loading...</div>
+        <div class="error" id="error"></div>
+
+        <!-- Landing page -->
+        <div id="landing-view" style="display:none;">
+            <div class="feature-grid" id="feature-grid"></div>
+        </div>
+
+        <!-- Diagram page -->
+        <div id="diagram-view" style="display:none;">
+            <div class="diagram-title" id="diagram-title"></div>
+            <div class="legend" id="legend"></div>
+            <div id="diagram-container"></div>
+            <p class="updated" id="updated"></p>
+        </div>
+    </div>
 
     <script>
-        // === CONFIGURATION ===
-        // Update these values after creating your Azure AD App Registration
         const CONFIG = {
             clientId: '9b3699cf-b298-41bc-b00a-205cbd5cdb61',
             tenantId: 'ffbd585c-62b9-4d26-97e9-cf789655f313',
             org: 'GlobalDI',
             project: 'Vision',
-            refreshIntervalMs: 60000                // Auto-refresh every 60 seconds
+            areaPath: 'Vision\\Team Catalyst',
+            refreshIntervalMs: 60000
         };
 
         const DEVOPS_SCOPE = '499b84ac-1321-427f-aa17-267ca6975798/vso.work';
+        const BASE_URL = 'https://dev.azure.com/' + CONFIG.org + '/' + CONFIG.project;
+        const PAGE_URL = window.location.origin + window.location.pathname;
 
-        // Get feature ID from URL: ?feature=15229
         const params = new URLSearchParams(window.location.search);
-        const featureId = parseInt(params.get('feature') || '15229');
+        const featureId = params.get('feature') ? parseInt(params.get('feature')) : null;
 
-        // MSAL setup
         const msalConfig = {
             auth: {
                 clientId: CONFIG.clientId,
-                authority: `https://login.microsoftonline.com/${CONFIG.tenantId}`,
+                authority: 'https://login.microsoftonline.com/' + CONFIG.tenantId,
                 redirectUri: 'https://rbennsoceaneering.github.io/vision-pbi-diagrams/'
             },
             cache: { cacheLocation: 'localStorage' }
         };
 
-        let msalInstance;
-        let accessToken = null;
+        var msalInstance;
+        var accessToken = null;
+        var refreshTimer = null;
 
         async function initMsal() {
             msalInstance = new msal.PublicClientApplication(msalConfig);
             await msalInstance.initialize();
 
-            // Handle redirect callback
-            const response = await msalInstance.handleRedirectPromise();
-            if (response) {
-                accessToken = response.accessToken;
-            }
+            var response = await msalInstance.handleRedirectPromise();
+            if (response) accessToken = response.accessToken;
 
-            // Check for existing account
-            const accounts = msalInstance.getAllAccounts();
+            var accounts = msalInstance.getAllAccounts();
             if (accounts.length > 0) {
                 try {
-                    const tokenResponse = await msalInstance.acquireTokenSilent({
+                    var tokenResponse = await msalInstance.acquireTokenSilent({
                         scopes: [DEVOPS_SCOPE],
                         account: accounts[0]
                     });
                     accessToken = tokenResponse.accessToken;
                 } catch (e) {
-                    console.log('Silent token failed, will need interactive login');
+                    console.log('Silent token failed');
                 }
             }
 
             if (accessToken) {
                 document.getElementById('login-container').style.display = 'none';
-                await loadAndRender();
-                setInterval(loadAndRender, CONFIG.refreshIntervalMs);
+                if (featureId) {
+                    showDiagramView();
+                } else {
+                    showLandingView();
+                }
             } else {
                 document.getElementById('status').textContent = '';
                 document.getElementById('login-container').style.display = 'block';
@@ -117,27 +227,38 @@
 
         async function signIn() {
             try {
-                await msalInstance.loginRedirect({
-                    scopes: [DEVOPS_SCOPE]
-                });
+                await msalInstance.loginRedirect({ scopes: [DEVOPS_SCOPE] });
             } catch (e) {
                 document.getElementById('error').textContent = 'Sign-in failed: ' + e.message;
             }
         }
 
         async function devopsGet(url) {
-            const resp = await fetch(url, {
-                headers: { 'Authorization': `Bearer ${accessToken}` }
+            var resp = await fetch(url, {
+                headers: { 'Authorization': 'Bearer ' + accessToken }
             });
-            if (!resp.ok) throw new Error(`API error ${resp.status}: ${url}`);
+            if (!resp.ok) throw new Error('API error ' + resp.status);
+            return resp.json();
+        }
+
+        async function devopsPost(url, body) {
+            var resp = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + accessToken,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(body)
+            });
+            if (!resp.ok) throw new Error('API error ' + resp.status);
             return resp.json();
         }
 
         function luminance(hex) {
             hex = hex.replace('#', '');
-            const r = parseInt(hex.substr(0, 2), 16);
-            const g = parseInt(hex.substr(2, 2), 16);
-            const b = parseInt(hex.substr(4, 2), 16);
+            var r = parseInt(hex.substr(0, 2), 16);
+            var g = parseInt(hex.substr(2, 2), 16);
+            var b = parseInt(hex.substr(4, 2), 16);
             return (0.299 * r + 0.587 * g + 0.114 * b) / 255;
         }
 
@@ -146,37 +267,133 @@
         }
 
         function sanitizeState(state) {
-            return state.replace(/[ -]/g, '_');
+            return state.replace(/[ \-]/g, '_');
         }
 
-        async function loadAndRender() {
+        // ==================== LANDING PAGE ====================
+
+        async function showLandingView() {
+            document.getElementById('landing-view').style.display = 'block';
+            document.getElementById('diagram-view').style.display = 'none';
+            document.getElementById('status').textContent = 'Loading Team Catalyst features...';
+
+            try {
+                var wiqlResult = await devopsPost(
+                    BASE_URL + '/_apis/wit/wiql?api-version=7.0',
+                    {
+                        query: "SELECT [System.Id] FROM WorkItems WHERE [System.WorkItemType] = 'Feature' AND [System.AreaPath] UNDER 'Vision\\Team Catalyst' AND [System.State] <> 'Removed' ORDER BY [Microsoft.VSTS.Common.BacklogPriority]"
+                    }
+                );
+                var featureIds = wiqlResult.workItems.map(function(w) { return w.id; });
+
+                // Batch fetch features
+                var features = [];
+                for (var i = 0; i < featureIds.length; i += 200) {
+                    var chunk = featureIds.slice(i, i + 200);
+                    var ids = chunk.join(',');
+                    var resp = await devopsGet(
+                        BASE_URL + '/_apis/wit/workitems?ids=' + ids + '&$expand=relations&api-version=7.0'
+                    );
+                    for (var j = 0; j < resp.value.length; j++) {
+                        var item = resp.value[j];
+                        var rels = item.relations || [];
+                        var childCount = 0;
+                        for (var k = 0; k < rels.length; k++) {
+                            if (rels[k].attributes && rels[k].attributes.name === 'Child') childCount++;
+                        }
+                        if (childCount === 0) continue;
+                        features.push({
+                            id: item.id,
+                            title: item.fields['System.Title'],
+                            state: item.fields['System.State'],
+                            childCount: childCount
+                        });
+                    }
+                }
+
+                // Get Feature state colors
+                var statesResp = await devopsGet(
+                    BASE_URL + '/_apis/wit/workitemtypes/Feature/states?api-version=7.0'
+                );
+                var featureColors = {};
+                for (var s = 0; s < statesResp.value.length; s++) {
+                    featureColors[statesResp.value[s].name] = '#' + statesResp.value[s].color;
+                }
+
+                // Render cards
+                var grid = document.getElementById('feature-grid');
+                grid.innerHTML = '';
+                for (var f = 0; f < features.length; f++) {
+                    var feat = features[f];
+                    var stateColor = featureColors[feat.state] || '#888';
+                    var txtCol = textColor(stateColor);
+                    var card = document.createElement('a');
+                    card.className = 'feature-card';
+                    card.href = PAGE_URL + '?feature=' + feat.id;
+                    card.innerHTML =
+                        '<div class="card-id">Feature ' + feat.id + '</div>' +
+                        '<div class="card-title">' + feat.title + '</div>' +
+                        '<div class="card-meta">' +
+                            '<span class="card-state" style="background:' + stateColor + ';color:' + txtCol + '">' + feat.state + '</span>' +
+                            '<span class="card-pbi-count">' + feat.childCount + ' PBIs</span>' +
+                        '</div>';
+                    grid.appendChild(card);
+                }
+
+                document.getElementById('status').textContent = features.length + ' features with PBIs';
+
+            } catch (e) {
+                document.getElementById('error').textContent = 'Error: ' + e.message;
+                document.getElementById('status').textContent = 'Failed to load';
+                console.error(e);
+            }
+        }
+
+        // ==================== DIAGRAM PAGE ====================
+
+        async function showDiagramView() {
+            document.getElementById('landing-view').style.display = 'none';
+            document.getElementById('diagram-view').style.display = 'block';
+
+            // Add back button to header
+            var header = document.getElementById('header');
+            if (!document.getElementById('back-btn')) {
+                var btn = document.createElement('a');
+                btn.id = 'back-btn';
+                btn.className = 'back-btn';
+                btn.href = PAGE_URL;
+                btn.innerHTML = '&#8592; All Features';
+                header.insertBefore(btn, header.firstChild);
+            }
+
+            await loadDiagram();
+            refreshTimer = setInterval(loadDiagram, CONFIG.refreshIntervalMs);
+        }
+
+        async function loadDiagram() {
             try {
                 document.getElementById('status').textContent = 'Fetching data from Azure DevOps...';
                 document.getElementById('error').textContent = '';
 
-                const base = `https://dev.azure.com/${CONFIG.org}/${CONFIG.project}`;
-
-                // Get feature
-                const feature = await devopsGet(
-                    `${base}/_apis/wit/workitems/${featureId}?$expand=relations&api-version=7.0`
+                var feature = await devopsGet(
+                    BASE_URL + '/_apis/wit/workitems/' + featureId + '?$expand=relations&api-version=7.0'
                 );
-                const featureTitle = `Feature ${featureId}: ${feature.fields['System.Title']}`;
-                document.getElementById('title').textContent = featureTitle + ' — PBI Dependencies';
+                var featureTitle = 'Feature ' + featureId + ': ' + feature.fields['System.Title'];
+                document.getElementById('diagram-title').textContent = featureTitle + ' \u2014 PBI Dependencies';
+                document.title = featureTitle + ' \u2014 PBI Diagram';
 
-                // Get child PBI IDs
-                const pbiIds = [];
-                for (const rel of (feature.relations || [])) {
-                    if (rel.attributes && rel.attributes.name === 'Child') {
-                        const id = parseInt(rel.url.split('/').pop());
-                        pbiIds.push(id);
+                var pbiIds = [];
+                var rels = feature.relations || [];
+                for (var i = 0; i < rels.length; i++) {
+                    if (rels[i].attributes && rels[i].attributes.name === 'Child') {
+                        pbiIds.push(parseInt(rels[i].url.split('/').pop()));
                     }
                 }
 
-                // Batch fetch PBIs
-                const pbis = [];
-                for (const id of pbiIds) {
-                    const item = await devopsGet(
-                        `${base}/_apis/wit/workitems/${id}?$expand=relations&api-version=7.0`
+                var pbis = [];
+                for (var i = 0; i < pbiIds.length; i++) {
+                    var item = await devopsGet(
+                        BASE_URL + '/_apis/wit/workitems/' + pbiIds[i] + '?$expand=relations&api-version=7.0'
                     );
                     pbis.push({
                         id: item.id,
@@ -186,69 +403,65 @@
                     });
                 }
 
-                // Get dependency edges
-                const edges = [];
-                const pbiIdSet = new Set(pbiIds);
-                for (const pbi of pbis) {
-                    for (const rel of pbi.relations) {
-                        if (rel.rel === 'System.LinkTypes.Dependency-Forward') {
-                            const succId = parseInt(rel.url.split('/').pop());
-                            if (pbiIdSet.has(succId)) {
-                                edges.push([pbi.id, succId]);
-                            }
+                var edges = [];
+                var pbiIdSet = {};
+                for (var i = 0; i < pbiIds.length; i++) pbiIdSet[pbiIds[i]] = true;
+                for (var i = 0; i < pbis.length; i++) {
+                    var pbiRels = pbis[i].relations;
+                    for (var j = 0; j < pbiRels.length; j++) {
+                        if (pbiRels[j].rel === 'System.LinkTypes.Dependency-Forward') {
+                            var succId = parseInt(pbiRels[j].url.split('/').pop());
+                            if (pbiIdSet[succId]) edges.push([pbis[i].id, succId]);
                         }
                     }
                 }
 
-                // Get state colors
-                const statesResp = await devopsGet(
-                    `${base}/_apis/wit/workitemtypes/Product%20Backlog%20Item/states?api-version=7.0`
+                var statesResp = await devopsGet(
+                    BASE_URL + '/_apis/wit/workitemtypes/Product%20Backlog%20Item/states?api-version=7.0'
                 );
-                const colors = {};
-                for (const s of statesResp.value) {
-                    colors[s.name] = '#' + s.color;
+                var colors = {};
+                for (var i = 0; i < statesResp.value.length; i++) {
+                    colors[statesResp.value[i].name] = '#' + statesResp.value[i].color;
                 }
 
-                // Build mermaid definition
-                let mermaid_def = 'flowchart TD\n';
-                for (const pbi of pbis) {
-                    const san = sanitizeState(pbi.state);
-                    mermaid_def += `    PBI${pbi.id}["${pbi.title}"]:::state_${san}\n`;
+                var mermaid_def = 'flowchart TD\n';
+                for (var i = 0; i < pbis.length; i++) {
+                    var san = sanitizeState(pbis[i].state);
+                    mermaid_def += '    PBI' + pbis[i].id + '["' + pbis[i].title + '"]:::state_' + san + '\n';
                 }
-                for (const [pred, succ] of edges) {
-                    mermaid_def += `    PBI${pred} --> PBI${succ}\n`;
+                for (var i = 0; i < edges.length; i++) {
+                    mermaid_def += '    PBI' + edges[i][0] + ' --> PBI' + edges[i][1] + '\n';
                 }
-                for (const pbi of pbis) {
-                    const url = `${base}/_workitems/edit/${pbi.id}`;
-                    mermaid_def += `    click PBI${pbi.id} "${url}" _blank\n`;
+                for (var i = 0; i < pbis.length; i++) {
+                    var url = BASE_URL + '/_workitems/edit/' + pbis[i].id;
+                    mermaid_def += '    click PBI' + pbis[i].id + ' "' + url + '" _blank\n';
                 }
-                const seenStates = new Set();
-                for (const pbi of pbis) {
-                    if (!seenStates.has(pbi.state)) {
-                        seenStates.add(pbi.state);
-                        const san = sanitizeState(pbi.state);
-                        const hex = colors[pbi.state] || '#888888';
-                        const txt = textColor(hex);
-                        mermaid_def += `    classDef state_${san} fill:${hex},color:${txt}\n`;
+                var seenStates = {};
+                for (var i = 0; i < pbis.length; i++) {
+                    var st = pbis[i].state;
+                    if (!seenStates[st]) {
+                        seenStates[st] = true;
+                        var san = sanitizeState(st);
+                        var hex = colors[st] || '#888888';
+                        var txt = textColor(hex);
+                        mermaid_def += '    classDef state_' + san + ' fill:' + hex + ',color:' + txt + '\n';
                     }
                 }
 
-                // Build legend
-                const legendEl = document.getElementById('legend');
+                var legendEl = document.getElementById('legend');
                 legendEl.innerHTML = '';
-                for (const state of seenStates) {
-                    const hex = colors[state] || '#888888';
-                    legendEl.innerHTML += `<div class="legend-item"><div class="legend-swatch" style="background:${hex}"></div>${state}</div>`;
+                for (var st in seenStates) {
+                    var hex = colors[st] || '#888888';
+                    legendEl.innerHTML += '<div class="legend-item"><div class="legend-swatch" style="background:' + hex + '"></div>' + st + '</div>';
                 }
 
-                // Render mermaid
-                const container = document.getElementById('diagram-container');
-                container.innerHTML = `<div class="mermaid">\n${mermaid_def}\n</div>`;
+                var container = document.getElementById('diagram-container');
+                container.innerHTML = '<div class="mermaid">\n' + mermaid_def + '\n</div>';
                 await mermaid.run({ nodes: container.querySelectorAll('.mermaid') });
 
-                const now = new Date().toLocaleString();
-                document.getElementById('updated').textContent = `Last updated: ${now} (auto-refreshes every ${CONFIG.refreshIntervalMs / 1000}s)`;
-                document.getElementById('status').textContent = `${pbis.length} PBIs, ${edges.length} dependencies`;
+                var now = new Date().toLocaleString();
+                document.getElementById('updated').textContent = 'Last updated: ' + now + ' (auto-refreshes every ' + (CONFIG.refreshIntervalMs / 1000) + 's)';
+                document.getElementById('status').textContent = pbis.length + ' PBIs, ' + edges.length + ' dependencies';
 
             } catch (e) {
                 document.getElementById('error').textContent = 'Error: ' + e.message;
@@ -282,7 +495,6 @@
             themeVariables: { fontSize: '32px' }
         });
 
-        // Start
         initMsal();
     </script>
 </body>
