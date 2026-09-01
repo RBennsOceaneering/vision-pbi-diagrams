@@ -467,7 +467,8 @@
                 var mermaid_def = 'flowchart TD\n';
                 for (var i = 0; i < pbis.length; i++) {
                     var san = sanitizeState(pbis[i].state);
-                    mermaid_def += '    PBI' + pbis[i].id + '["' + pbis[i].title + '"]:::state_' + san + '\n';
+                    var safeTitle = pbis[i].title.replace(/"/g, '#quot;');
+                    mermaid_def += '    PBI' + pbis[i].id + '["' + safeTitle + '"]:::state_' + san + '\n';
                 }
                 for (var i = 0; i < edges.length; i++) {
                     mermaid_def += '    PBI' + edges[i][0] + ' --> PBI' + edges[i][1] + '\n';
