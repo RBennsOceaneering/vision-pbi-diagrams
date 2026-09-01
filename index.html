@@ -368,7 +368,12 @@
                     var txtCol = textColor(stateColor);
                     var card = document.createElement('a');
                     card.className = 'feature-card';
-                    card.href = PAGE_URL + '?feature=' + feat.id + '&team=' + encodeURIComponent(currentTeam);
+                    if (feat.childCount > 0) {
+                        card.href = PAGE_URL + '?feature=' + feat.id + '&team=' + encodeURIComponent(currentTeam);
+                    } else {
+                        card.href = BASE_URL + '/_workitems/edit/' + feat.id;
+                        card.target = '_blank';
+                    }
                     card.innerHTML =
                         '<div class="card-id">Feature ' + feat.id + '</div>' +
                         '<div class="card-title">' + feat.title + '</div>' +
@@ -418,7 +423,8 @@
                     BASE_URL + '/_apis/wit/workitems/' + featureId + '?$expand=relations&api-version=7.0'
                 );
                 var featureTitle = 'Feature ' + featureId + ': ' + feature.fields['System.Title'];
-                document.getElementById('diagram-title').textContent = featureTitle + ' \u2014 PBI Dependencies';
+                var titleEl = document.getElementById('diagram-title');
+                titleEl.innerHTML = '<a href="' + BASE_URL + '/_workitems/edit/' + featureId + '" target="_blank" style="color:#4fc3f7;text-decoration:none;">' + featureTitle + '</a> \u2014 PBI Dependencies';
                 document.title = featureTitle + ' \u2014 PBI Diagram';
 
                 var pbiIds = [];
