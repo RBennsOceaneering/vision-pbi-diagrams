@@ -113,6 +113,20 @@
             font-size: 0.75rem;
         }
 
+        /* --- Team dropdown --- */
+        .team-select {
+            background: #333;
+            color: #ccc;
+            border: 1px solid #555;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-left: auto;
+        }
+        .team-select:hover { border-color: #0078d4; }
+        .team-select:focus { outline: 1px solid #0078d4; }
+
         /* --- Diagram page --- */
         .status { font-size: 0.9rem; color: #888; text-align: center; margin-bottom: 1rem; }
         .mermaid { background: #2d2d2d; padding: 2rem; border-radius: 8px; width: 100%; }
@@ -135,9 +149,15 @@
 <body>
     <div class="header" id="header">
         <div>
-            <h1>Team Catalyst — PBI Dependency Diagrams</h1>
-            <div class="subtitle">Live dependency graphs for Team Catalyst features</div>
+            <h1 id="header-title">PBI Dependency Diagrams</h1>
+            <div class="subtitle">Live dependency graphs for Vision team features</div>
         </div>
+        <select class="team-select" id="team-select" onchange="onTeamChange()">
+            <option value="Vision\\Team Catalyst">Team Catalyst</option>
+            <option value="Vision\\Team Thunderhorse">Team Thunderhorse</option>
+            <option value="Vision\\Team Rogue">Team Rogue</option>
+            <option value="Vision\\Team Cerberus">Team Cerberus</option>
+        </select>
     </div>
 
     <div class="main">
@@ -178,6 +198,23 @@
 
         const params = new URLSearchParams(window.location.search);
         const featureId = params.get('feature') ? parseInt(params.get('feature')) : null;
+        var currentTeam = params.get('team') || 'Vision\\Team Catalyst';
+
+        function getTeamLabel(areaPath) {
+            return areaPath.split('\\').pop();
+        }
+
+        function onTeamChange() {
+            var sel = document.getElementById('team-select');
+            currentTeam = sel.value;
+            var url = PAGE_URL + '?team=' + encodeURIComponent(currentTeam);
+            window.location.href = url;
+        }
+
+        function initTeamDropdown() {
+            var sel = document.getElementById('team-select');
+            sel.value = currentTeam;
+        }
 
         const msalConfig = {
             auth: {
@@ -214,6 +251,7 @@
 
             if (accessToken) {
                 document.getElementById('login-container').style.display = 'none';
+                initTeamDropdown();
                 if (featureId) {
                     showDiagramView();
                 } else {
@@ -275,13 +313,15 @@
         async function showLandingView() {
             document.getElementById('landing-view').style.display = 'block';
             document.getElementById('diagram-view').style.display = 'none';
-            document.getElementById('status').textContent = 'Loading Team Catalyst features...';
+            var teamLabel = getTeamLabel(currentTeam);
+            document.getElementById('header-title').textContent = teamLabel + ' — PBI Dependency Diagrams';
+            document.getElementById('status').textContent = 'Loading ' + teamLabel + ' features...';
 
             try {
                 var wiqlResult = await devopsPost(
                     BASE_URL + '/_apis/wit/wiql?api-version=7.0',
                     {
-                        query: "SELECT [System.Id] FROM WorkItems WHERE [System.WorkItemType] = 'Feature' AND [System.AreaPath] UNDER 'Vision\\Team Catalyst' AND [System.State] <> 'Removed' ORDER BY [Microsoft.VSTS.Common.BacklogPriority]"
+                        query: "SELECT [System.Id] FROM WorkItems WHERE [System.WorkItemType] = 'Feature' AND [System.AreaPath] UNDER '" + currentTeam + "' AND [System.State] <> 'Removed' AND [System.State] <> 'Done' ORDER BY [Microsoft.VSTS.Common.BacklogPriority]"
                     }
                 );
                 var featureIds = wiqlResult.workItems.map(function(w) { return w.id; });
@@ -329,7 +369,7 @@
                     var txtCol = textColor(stateColor);
                     var card = document.createElement('a');
                     card.className = 'feature-card';
-                    card.href = PAGE_URL + '?feature=' + feat.id;
+                    card.href = PAGE_URL + '?feature=' + feat.id + '&team=' + encodeURIComponent(currentTeam);
                     card.innerHTML =
                         '<div class="card-id">Feature ' + feat.id + '</div>' +
                         '<div class="card-title">' + feat.title + '</div>' +
@@ -361,7 +401,7 @@
                 var btn = document.createElement('a');
                 btn.id = 'back-btn';
                 btn.className = 'back-btn';
-                btn.href = PAGE_URL;
+                btn.href = PAGE_URL + '?team=' + encodeURIComponent(currentTeam);
                 btn.innerHTML = '&#8592; All Features';
                 header.insertBefore(btn, header.firstChild);
             }
