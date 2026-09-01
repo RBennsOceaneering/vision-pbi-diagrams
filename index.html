@@ -341,7 +341,6 @@
                         for (var k = 0; k < rels.length; k++) {
                             if (rels[k].attributes && rels[k].attributes.name === 'Child') childCount++;
                         }
-                        if (childCount === 0) continue;
                         features.push({
                             id: item.id,
                             title: item.fields['System.Title'],
@@ -375,7 +374,7 @@
                         '<div class="card-title">' + feat.title + '</div>' +
                         '<div class="card-meta">' +
                             '<span class="card-state" style="background:' + stateColor + ';color:' + txtCol + '">' + feat.state + '</span>' +
-                            '<span class="card-pbi-count">' + feat.childCount + ' PBIs</span>' +
+                            '<span class="card-pbi-count">' + (feat.childCount > 0 ? feat.childCount + ' PBIs' : 'No PBIs') + '</span>' +
                         '</div>';
                     grid.appendChild(card);
                 }
